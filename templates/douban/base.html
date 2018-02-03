@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<title>{% block title %}Title{% endblock %}</title>
+		<script src="{% static "table.js" %}"></script>
+		<link rel="stylesheet" type="text/css" href="{% static "table.css" %}">
+		<style type='text/css'>
+		.top-info {
+			float:right;
+			margin:0 12px 0 0;
+		}
+		.user-account {
+			left:auto;
+			right:6px;
+		}
+		</style>
+	</head>	
+	<body>
+		<div class='top-info'><ul><li class='user-account'>
+			<span>Hi,{{user}}</span>
+			<a href='/douban'>首页</a>
+			<a href='/douban/persons.html'>影评人</a>
+			<a href='/douban/update.html'>更新</a>
+			{% if user %}
+			<a href='/douban/logout.html'>登出</a>
+			{% endif %}
+		</li></ul></div>
+		{% block info %}{% endblock %}
+		<div class='paginator'>
+			<span class='step-link'>
+				{% block paginator %}{% endblock %}
+			</span>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE=html>
+{% load static %}
+<html>
+	<head>
+		<title>登录豆瓣</title>
+<style type='text/css'>
+.item { clear:both;margin:0 0 15px;zoom:1; }
+label { display: inline-block; float:left; margin-right: 15px; text-align: right; width: 60px; font-size: 14px; line-height: 30px; vertical-align: baseline }
+.remember { cursor: pointer; font-size: 12px; display: inline; width: auto; text-align: left; float: none; margin: 0; color: #666 }
+.item-captcha input,
+.basic-input { width: 200px; padding: 5px; height: 18px; font-size: 14px;vertical-align:middle; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; border: 1px solid #c9c9c9 }
+.basic-input.small {width:100px;}
+.item-captcha input:focus,
+.basic-input:focus { border: 1px solid #a9a9a9 }
+.item-captcha input { width:100px; }
+.item-captcha .pl { color:#666; }
+.btn-submit { cursor: pointer;color: #ffffff;background: #3fa156; border: 1px solid #528641; font-size: 14px; font-weight: bold; padding:6px 26px; border-radius: 3px; -moz-border-radius: 3px; -webkit-border-radius: 3px; *width: 100px;*height:30px; }
+.btn-submit:hover { background-color:#4fca6c;border-color:#6aad54; }
+.btn-submit:active { background-color:#3fa156;border-color:#528641; }
+#item-error { padding-left:75px; }
+.item-captcha img { max-width:70%; }
+#content {
+    width: 350px;
+    height: 350px;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+#item-error { padding-left:75px; }
+.error-tip { margin-left:10px; }
+.error-tip, .error { color:#fe2617;
+</style>
+	</head>
+	<body>
+		<div id='content'>
+			<h1>登录豆瓣</h1>
+			{% if error %}
+				<div id="item-error">
+					<p class="error">{{ error }}</p>
+    				</div>
+			{% endif %}
+			<form id='lzform' onsubmit='return validateForm(this)' action='' method='post'>
+				{% csrf_token %}
+				<div class='item'>
+					<label for='user'>用户名</label>
+					<input class='basic_input' id='user' name='username' type="text" value='邮箱/手机号/用户名' />
+				</div>
+				<div class='item'>
+					<label for='pass'>密码</label>
+					<input class='basic_input' id='pass' name='password' type="password" />
+				</div>
+				{% if captcha %}
+					<div class='item'>
+						<label>验证码</label>
+						<img alt="captcha" class="captcha_image" id="captcha_image" src={{auth_img_src}} />
+						<div class="captcha_block">
+							<span class="pl">
+          						请输入验证码	
+         						</span>
+							<input id="auth_field" name="authcode" type="text" placeholder="验证码"/>
+							<input name="authid"  type="hidden" value={{auth_id}} />
+						</div>
+					</div>
+				{% endif %}
+				<div class='item'>
+					<label>&nbsp;</label>
+					<input type='submit' class='btn-submit' value='登录'>
+				</div>
+			</form>
+		</div>
+		<script>
+function trim(e) {
+    return e.replace(/^(\s|\u00A0)+/, "").replace(/(\s|\u00A0)+$/, "")
+}
+function validateForm(e) {
+    var r = 0,
+    t = e.elements["authcode"],
+    l = e.elements.username,
+    n = e.elements.password,
+    a = document.getElementById("item-error");
+    if (a && (a.style.display = "none"), t) {
+        var o = trim(t.value);
+        "" === o ? (displayError(t, "请输入验证码"), r = 1) : o.length < 4 ? (displayError(t, "请输入正确的验证码"), r = 1) : clearError(t)
+    }
+    if (l) {
+        var i = trim(l.value);
+        "" === i || '邮箱/手机号/用户名' == i ? (displayError(l, "请输入正确的邮箱/手机号/用户名"), r = 1) : clearError(l)
+    }
+    return n && ("" === n.value ? (displayError(n, "请输入密码"), r = 1) : n && clearError(n)),
+    !r
+}
+function displayError(e, r) {
+    var t = document.getElementById(e.name + "_err");
+    t || (t = document.createElement("span"), t.id = e.name + "_err", t.className = "error-tip", e.parentNode.appendChild(t)),
+    t.style.display = "inline",
+    t.innerHTML = r
+}
+function clearError(e) {
+    var r = document.getElementById(e.name + "_err");
+    r && (r.style.display = "none")
+} !
+function(e) {
+    var r = function(r) {
+        return e.getElementById(r)
+    },
+    t = "邮箱/手机号/用户名",
+    l = r("user"),
+    n = r("pass"),
+    a = r("auth_field");
+    l.onfocus = function() {
+        this.value == t && (this.value = "", this.style.color = "#000")
+    },
+    l.onblur = function() {
+        this.value || (this.value = t, this.style.color = "#ccc")
+    },
+    l.value == t ? l.style.color = "#ccc": "" === n.value ? n.focus() : a && a.focus()
+} (document);
+		</script>
+	</body>
+</html>

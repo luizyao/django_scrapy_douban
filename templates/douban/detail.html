@@ -1,0 +1,30 @@
+{% extends "./base.html" %}
+
+{% block title %}影片详细评论{% endblock %}
+
+{% block info %}
+<table>
+        <tr>
+        <th>电影名</th>
+        <th>用户名</th>
+        <th>短评</th>
+        <th>评价</th>
+        <th>日期</th>
+        <th>来源</th>
+        </tr>
+        {% for info in film_info.object_list %}
+	<tr>
+		<td><a href="/douban/{{info.film_name}}/all_comments.html">{{info.film_name}}</a></td>
+		<td><a href="/douban/persons/{{info.cus_name}}/all_comments.html">{{info.cus_name}}</td>
+        	<td>{{info.comment}}</td>
+        	<td>{{info.grade}}</td>
+        	<td>{{info.time|date:"Y-m-d H:m:s"}}</td>
+        	<td>{{info.source}}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}
+{% block paginator %}
+{% load paginator_extras %}
+	{% circle_page film_info %}
+{% endblock %}

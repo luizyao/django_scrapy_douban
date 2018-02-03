@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<title>获取最新电影短评</title>
+	<style type='text/css'>
+                .top-info {
+                        float:right;
+                        margin:0 12px 0 0;
+                }
+                .user-account {
+                        left:auto;
+                        right:6px;
+                }
+		#content {
+    			width: 350px;
+    			height: 350px;
+			margin: auto;
+    			position: absolute;
+    			top: 0;
+    			bottom: 0;
+    			left: 0;
+    			right: 0;
+		}
+
+        </style>
+	</head>
+	<body>
+		<div class='top-info'><ul><li class='user-account'>
+                        <span>Hi,{{user}}</span>
+                        <a href='/douban'>首页</a>
+                        <a href='/douban/persons.html'>影评人</a>
+                        <a href='/douban/logout.html'>登出</a>
+                </li></ul></div>
+		<div id='content'>
+			<form class='update_form' method='post' action='update.html'>
+				{% csrf_token %}
+				<label for='m_name'>电影名</label>
+				<select name='movie_name' id='m_name'>
+					<option value='ALL' selected='selected'>ALL</option>
+					{% for name in all_movies_names %}
+						<option value={{name}}>{{name}}</option>
+					{% endfor %}
+				</select>
+				<input type='submit' value='更新' />
+			</form>
+		</div>
+	</body>		
+</html>

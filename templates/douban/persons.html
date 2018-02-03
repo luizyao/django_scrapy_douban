@@ -1,0 +1,32 @@
+{% extends "./base.html" %}
+
+{% block title %}欢迎查看{% endblock %}
+
+{% block info %}
+<table>
+        <tr>
+        <th>用户名</th>
+        <th>力荐</th>
+        <th>推荐</th>
+        <th>还行</th>
+        <th>较差</th>
+        <th>很差</th>
+        <th>总评论数</th>
+        </tr>
+        {% for info in film_grade_list.object_list %}
+		<tr>
+		<td><a href="persons/{{info.cus_name}}/all_comments.html">{{info.cus_name}}</a></td>
+		<td><a href="persons/{{info.cus_name}}/high_comments.html">{{info.high_recommend}}</a></td>
+		<td><a href="persons/{{info.cus_name}}/recommend_comments.html">{{info.recommend}}</a></td>
+		<td><a href="persons/{{info.cus_name}}/general_comments.html">{{info.general}}</a></td>
+		<td><a href="persons/{{info.cus_name}}/poor_comments.html">{{info.poor}}</a></td>
+		<td><a href="persons/{{info.cus_name}}/verypoor_comments.html">{{info.very_poor}}</a></td>
+                <td>{{info.sum}}</td>
+		</tr>
+        {% endfor %}
+</table>
+{% endblock %}
+{% block paginator %}
+	{% load paginator_extras %}
+	{% circle_page film_grade_list %}
+{% endblock %}
