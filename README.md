@@ -27,13 +27,14 @@ A django app to collect and display movie's short comments from douban.com.
             # database also need to changed, reference http://www.cnblogs.com/seayxu/p/5603876.html    
             'charset': 'utf8mb4',
         },
+   }
     ```
     
  4. Include the polls URLconf in your project urls.py like this::
     ```py
     from django.urls import include 
     from django.conf.urls import url
-    url(r'^douban/', include('douban.urls'))
+    url(r'^douban/', include('douban.urls')),
     ```
     
 5. Run `python3 manage.py makemigrations douban` and `python3 manage.py migrate` to create the douban models.
