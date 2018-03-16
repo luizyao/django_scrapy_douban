@@ -90,10 +90,13 @@ def update(request):
         result_path = os.path.join(file_dir, 'result.json')
         if(os.path.isfile(result_path)):
             os.remove(result_path)
-        child = subprocess.Popen("scrapy crawl douban -a FILM_NAME='{}' -a COOKIES='{}' -o result.json".format(movie_name, '@'.join(scrapy_cookies)), shell=True, cwd=file_dir)
+        child = subprocess.Popen("scrapy crawl douban -a FILM_NAME=\"{}\" -a COOKIES=\"{}\" -o result.json".format(movie_name, '@'.join(scrapy_cookies)), shell=True, cwd=file_dir)
         child.wait()
         save_from_json(result_path)
-        return HttpResponseRedirect('/douban/{}/all_comments.html'.format(movie_name))
+        if(movie_name.lower() == "all"):
+            return HttpResponseRedirect('/douban')
+        else:
+            return HttpResponseRedirect('/douban/{}/all_comments.html'.format(movie_name))
     else:
         # all movies that is playing in cinema now
         response = requests.get('https://movie.douban.com/cinema/nowplaying/nanjing/', cookies=douban)

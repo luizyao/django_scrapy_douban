@@ -16,10 +16,9 @@ class DouBanSpider(Spider):
             "User-Agent":"'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'"
         }
 
-   
     def __init__(self, FILM_NAME=None, COOKIES="", *args, **kwargs):
         super(type(self), self).__init__(*args, **kwargs)
-        self.FILM_NAME = FILM_NAME 
+        self.FILM_NAME = FILM_NAME
         self.COOKIES = {} 
         i = 0 
         COOKIES = COOKIES.split('@')
@@ -41,11 +40,14 @@ class DouBanSpider(Spider):
                 dic[infoLst[1]] = infoLst[0]
                 self.logger.info("Name:{}\tId:{}".format(infoLst[1], infoLst[0]))
         if(len(dic) > 0):
-            if(not self.FILM_NAME == 'ALL'):
+            if(not self.FILM_NAME.lower() == 'all'):
                 try:
                     yield Request(url="https://movie.douban.com/subject/" + dic[self.FILM_NAME] + "/comments", 
                             cookies = self.COOKIES,
                             callback=self.parse)
+                except KeyError as e:
+                    self.logger.error("这部电影不再上映之列：{}".format(self.FILM_NAME))
+                    return
                 except Exception as e:
                     self.logger.error("发生错误：{}".format(e.args[0]))
                     return
@@ -58,14 +60,17 @@ class DouBanSpider(Spider):
             yield response.request 
 
     def parse(self, response):
-        filmName = ''.join(response.xpath("//div[@id='content']/h1/text()").extract()).split(' ')[0:1]
+        filmName = ''.join(response.xpath("//div[@id='content']/h1/text()").extract()).split(' ')
+        print(filmName)
+        if(len(filmName) > 1):
+            filmName.pop()
         for sel in response.xpath("//div[@class='comment-item']/div[@class='comment']"):
             comment = FilmCommentsItem()
             comment['cus_name'] = sel.xpath(".//span[@class='comment-info']/a/text()").extract()
             comment['comment'] = sel.xpath("p/text()").extract()
             comment['grade'] = sel.xpath(".//span[@class='comment-info']/span[@class[contains(., 'allstar')]]/@title").extract()
             comment['time'] = sel.xpath(".//span[@class='comment-info']/span[@class[contains(., 'comment-time')]]/@title").extract()
-            comment['film_name'] = filmName
+            comment['film_name'] = [" ".join(filmName)]
             comment['source'] = ','.join(self.allowed_domains)
             yield comment
         nextPage = response.xpath("//div[@id='paginator']/a[@class='next']/@href").extract_first()

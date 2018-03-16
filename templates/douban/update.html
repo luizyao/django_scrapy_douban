@@ -38,7 +38,7 @@
 				<select name='movie_name' id='m_name'>
 					<option value='ALL' selected='selected'>ALL</option>
 					{% for name in all_movies_names %}
-						<option value={{name}}>{{name}}</option>
+						<option value='{{name}}'>{{name}}</option>
 					{% endfor %}
 				</select>
 				<input type='submit' value='更新' />
