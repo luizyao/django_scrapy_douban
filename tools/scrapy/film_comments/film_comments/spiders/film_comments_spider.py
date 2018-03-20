@@ -1,13 +1,13 @@
 # encoding=utf-8
 from scrapy import Spider
-from film_comments.items import FilmCommentsItem 
-from scrapy.http import Request, FormRequest 
+from film_comments.items import FilmCommentsItem
+from scrapy.http import Request, FormRequest
 
 class DouBanSpider(Spider):
     name = 'douban'
     allowed_domains = ['douban.com']
     # the start page for all palying film now
-    start_urls = ['https://movie.douban.com/cinema/nowplaying/nanjing/']
+    start_urls = []
     headers = {
             "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Encoding":"gzip, deflate",
@@ -16,10 +16,11 @@ class DouBanSpider(Spider):
             "User-Agent":"'Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'"
         }
 
-    def __init__(self, FILM_NAME=None, COOKIES="", *args, **kwargs):
+    def __init__(self, FILM_NAME=None, COOKIES="", START_URL="", *args, **kwargs):
         super(type(self), self).__init__(*args, **kwargs)
         self.FILM_NAME = FILM_NAME
-        self.COOKIES = {} 
+        self.COOKIES = {}
+        self.start_urls.append(START_URL)
         i = 0 
         COOKIES = COOKIES.split('@')
         while(i<len(COOKIES)-1):

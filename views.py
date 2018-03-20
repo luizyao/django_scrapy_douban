@@ -8,7 +8,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as lgi, logout as lgo
 from django.contrib.auth.decorators import login_required
 import requests, logging, os
-import subprocess
+import subprocess, pypinyin
+from django.conf import settings
 
 # Create your views here.
 def index(request):
@@ -79,6 +80,10 @@ def update(request):
     context = {}
     context['user'] = request.user.username 
     douban = request.session['douban']
+    city = request.session.get('city')
+    py_city = pypinyin.lazy_pinyin(city)
+    py_city.pop()
+    url = 'https://movie.douban.com/cinema/nowplaying/{}/'.format("".join(py_city))
     if(request.method == 'POST'):
         movie_name = request.POST['movie_name']
         # transfer cookies to a string
@@ -90,7 +95,7 @@ def update(request):
         result_path = os.path.join(file_dir, 'result.json')
         if(os.path.isfile(result_path)):
             os.remove(result_path)
-        child = subprocess.Popen("scrapy crawl douban -a FILM_NAME=\"{}\" -a COOKIES=\"{}\" -o result.json".format(movie_name, '@'.join(scrapy_cookies)), shell=True, cwd=file_dir)
+        child = subprocess.Popen("scrapy crawl douban -a FILM_NAME=\"{}\" -a COOKIES=\"{}\" -a START_URL=\"{}\" -o result.json".format(movie_name, '@'.join(scrapy_cookies), url), shell=True, cwd=file_dir)
         child.wait()
         save_from_json(result_path)
         if(movie_name.lower() == "all"):
@@ -99,9 +104,10 @@ def update(request):
             return HttpResponseRedirect('/douban/{}/all_comments.html'.format(movie_name))
     else:
         # all movies that is playing in cinema now
-        response = requests.get('https://movie.douban.com/cinema/nowplaying/nanjing/', cookies=douban)
+        response = requests.get(url, cookies=douban)
         soup = BeautifulSoup(response.text, 'lxml')
-        context['all_movies_names'] = [] 
+        context['city'] = city
+        context['all_movies_names'] = []
         for movie in soup.find('div', id='nowplaying').find_all('li', class_='list-item'):
             context['all_movies_names'].append(movie['data-title'])
         return render(request, 'douban/update.html', context)            
@@ -178,6 +184,15 @@ def login(request):
                     lgi(request, user)
                 # save cookies from douban.com to session with a dict 
                 request.session['douban'] = cookies.get_dict()
+                # locate your city
+                payload = {'ak':settings.BAIDU_AK}
+                resp = requests.post('https://api.map.baidu.com/location/ip', data=payload).json()
+                if(resp['status'] == 0):
+                    # locate successful, save in sessions
+                    request.session['city'] = resp['content']['address_detail']['city']
+                else:
+                    # default city is beijing
+                    request.session['city'] = "北京市"
                 if('next' in request.GET):
                     return HttpResponseRedirect(request.GET['next'])
                 else:

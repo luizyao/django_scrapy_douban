@@ -21,7 +21,6 @@
     			left: 0;
     			right: 0;
 		}
-
         </style>
 	</head>
 	<body>
@@ -34,14 +33,18 @@
 		<div id='content'>
 			<form class='update_form' method='post' action='update.html'>
 				{% csrf_token %}
-				<label for='m_name'>电影名</label>
-				<select name='movie_name' id='m_name'>
-					<option value='ALL' selected='selected'>ALL</option>
-					{% for name in all_movies_names %}
-						<option value='{{name}}'>{{name}}</option>
-					{% endfor %}
-				</select>
-				<input type='submit' value='更新' />
+				<label for='m_name'>{{city}}</label>
+                {% if all_movies_names|length == 0 %}
+                <span id="m_name"><b>你所在的城市没有电影上映</b></span>
+                {% else %}
+                    <select name='movie_name' id='m_name'>
+                        <option value='ALL' selected='selected'>ALL</option>
+                        {% for name in all_movies_names %}
+                            <option value='{{name}}'>{{name}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type='submit' value='更新' />
+                {% endif %}
 			</form>
 		</div>
 	</body>		
